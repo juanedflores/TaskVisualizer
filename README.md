@@ -13,3 +13,5 @@ Follow the installation instructions for your platform:
 This hook records tasks when starting a task via Taskwarrior e.g. `task 1 start` & `task 1 done`.
 
 You might need to edit this file to change the full path to your own specific `timew` command location.
+
+Be aware of the process to install hooks. You have to make it executable `chmod +x on-modify-timewarrior.py` and put it inside the `~/.task/hooks/` directory.
