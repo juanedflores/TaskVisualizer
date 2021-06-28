@@ -142,6 +142,9 @@
 			<resource>
 				<directory>src/main/resources/images</directory>
 			</resource>
+			<resource>
+				<directory>src/main/resources/text</directory>
+			</resource>
 		</resources>
 
 	</build>
