@@ -2,6 +2,7 @@ package com.juaned;
 
 import java.awt.AWTException;
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.MenuItem;
@@ -16,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -26,7 +29,9 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 public class GUI extends JFrame {
@@ -49,10 +54,14 @@ public class GUI extends JFrame {
 	private boolean settingsPanelVisible;
 
 	/* User Task Settings */
+	private static String taskID;
 	private static JPanel settingsPanel;
+	private static JPanel savedTaskPanel;
 	private JLabel settingsPanelTitleLabel;
 	private JLabel addTaskNameLabel;
-	private JButton startTaskButton;
+	private JButton startStopTaskButton;
+	private JButton addNewSavedTask;
+	private Boolean taskStarted;
 	private static JTextField currentTaskTextField;
 
 	public GUI() {
@@ -128,45 +137,129 @@ public class GUI extends JFrame {
 		addTaskNameLabel.setText("Add Task Name:");
 		addTaskNameLabel.setForeground(Color.WHITE);
 		currentTaskTextField = new JTextField(20);
-		startTaskButton = new JButton("Start Task");
-		startTaskButton.addActionListener(new ActionListener() {
+		taskStarted = false;
+		startStopTaskButton = new JButton("Start Task");
+		startStopTaskButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("starting..");
+				System.out.println("adding task..");
 				String getTaskText = currentTaskTextField.getText();
-				if (!getTaskText.equals("")) {
-					String command = String.format("/usr/local/bin/task add %s", getTaskText);
+				if (!getTaskText.equals("") && !taskStarted) {
+					String addTaskCommand = String.format("/usr/local/bin/task add %s", getTaskText.toUpperCase());
 					Process proc = null;
 					try {
-						proc = Runtime.getRuntime().exec(command);
+						// add the task
+						proc = Runtime.getRuntime().exec(addTaskCommand);
 					} catch (IOException exception) {
 						exception.printStackTrace();
 					}
-
-					// read the output, get task ID
+					// wait for the process to finish
+					try {
+						proc.waitFor();
+					} catch (InterruptedException exception) {
+						exception.printStackTrace();
+					}
+					// grab the ID of last task created
+					String getLastTaskCommand = String.format("/usr/local/bin/task newest rc.verbose=nothing limit:1");
+					proc = null;
+					try {
+						proc = Runtime.getRuntime().exec(getLastTaskCommand);
+					} catch (IOException exception) {
+						exception.printStackTrace();
+					}
+					// wait for the process to finish
+					try {
+						proc.waitFor();
+					} catch (InterruptedException exception) {
+						exception.printStackTrace();
+					}
+					// read the output, assign task ID to variable
 					BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-					String taskOutput = reader.readLine();
+					String taskOutput = "";
+					try {
+						taskOutput = reader.readLine();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 					System.out.println(taskOutput);
+					Pattern p = Pattern.compile("(^|\\s)([0-9]+)($|\\s)");
+					Matcher m = p.matcher(taskOutput);
+					if (m.find()) {
+						System.out.println(m.group(2));
+						taskID = m.group(2);
+						// start task
+						String startTaskCommand = String.format("/usr/local/bin/task %s start", taskID);
+						System.out.println(startTaskCommand);
+						proc = null;
+						try {
+							proc = Runtime.getRuntime().exec(startTaskCommand);
+						} catch (IOException exception) {
+							exception.printStackTrace();
+						}
+						// wait for the process to finish
+						try {
+							proc.waitFor();
+						} catch (InterruptedException exception) {
+							exception.printStackTrace();
+						}
+						// update boolean clear text field and change button text to Stop Task
+						taskStarted = true;
+						currentTaskTextField.setText("");
+						currentTaskTextField.setEnabled(false);
+						startStopTaskButton.setText("Pause Task");
+					}
+				} else if (taskStarted) {
+					String stopTaskCommand = String.format("/usr/local/bin/task stop %s", taskID);
+					Process proc = null;
+					try {
+						// start the task
+						proc = Runtime.getRuntime().exec(stopTaskCommand);
+					} catch (IOException exception) {
+						exception.printStackTrace();
+					}
+					// wait for the process to finish
+					try {
+						proc.waitFor();
+					} catch (InterruptedException exception) {
+						exception.printStackTrace();
+					}
+					// update boolean and change button text to Start Task
+					taskStarted = false;
+					currentTaskTextField.setEnabled(true);
+					startStopTaskButton.setText("Start Task");
+				}
+			}
+		});
+
+		savedTaskPanel = new JPanel();
+		savedTaskPanel.setLayout(new GridLayout(3, 3));
+		addNewSavedTask = new JButton("Add To Task List");
+		addNewSavedTask.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String userHomeDir = System.getProperty("user.home");
+				File f = new File(userHomeDir + "/.task/");
+				if (f.exists() && f.isDirectory()) {
+					System.out.println("do stuff here");
+				} else {
+					JOptionPane.showMessageDialog(null, "TaskWarrior is not installed! Please read the README.md for full installation process");
 				}
 
-				// int exitVal = 0;
-				// try {
-				// exitVal = proc.waitFor();
-				// } catch (InterruptedException e1) {
-				// e1.printStackTrace();
-				// }
-				// if (exitVal == 0) {
-				// System.out.println("Success!");
-				// } else {
-				// System.out.println("Failure");
-				// }
-				// System.out.println(command);
-				// System.out.println(reader);
+
+				// JPanel newPanel = new JPanel();
+				// JLabel savedTaskName = new JLabel("Guitar");
+				// JRadioButton j1 = new JRadioButton();
+				// newPanel.add(savedTaskName);
+				// newPanel.add(j1);
+				// savedTaskPanel.add(newPanel);
+				// settingsPanel.revalidate();
+				// validate();
 			}
 		});
 
 		settingsPanel.add(addTaskNameLabel);
+		settingsPanel.add(savedTaskPanel);
+		settingsPanel.add(addNewSavedTask);
 		settingsPanel.add(currentTaskTextField);
-		settingsPanel.add(startTaskButton);
+		settingsPanel.add(startStopTaskButton);
 
 		// make settingsPanel invisible at start
 		settingsPanel.setVisible(false);
@@ -252,21 +345,21 @@ public class GUI extends JFrame {
 	static class MenuItemListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			switch (e.getActionCommand()) {
-			case "Show":
-				System.out.println(e.getActionCommand());
-				app.setVisible(true);
-				break;
-			case "Hide":
-				System.out.println(e.getActionCommand());
-				app.setVisible(false);
-				break;
-			case "Exit":
-				System.out.println(e.getActionCommand());
-				System.exit(0);
-				break;
-			default:
-				System.out.println(e.getActionCommand());
-				break;
+				case "Show":
+					System.out.println(e.getActionCommand());
+					app.setVisible(true);
+					break;
+				case "Hide":
+					System.out.println(e.getActionCommand());
+					app.setVisible(false);
+					break;
+				case "Exit":
+					System.out.println(e.getActionCommand());
+					System.exit(0);
+					break;
+				default:
+					System.out.println(e.getActionCommand());
+					break;
 			}
 		}
 	}
