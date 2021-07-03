@@ -88,7 +88,6 @@ public class TaskInfo {
 			LocalDateTime enddateTime = LocalDateTime.parse(endString, formatter);
 			// convert to local time zone
 			ZonedDateTime endTZ = enddateTime.atZone(ZoneOffset.UTC).withZoneSameInstant(central);
-
 			Duration duration = null;
 			long seconds = 0;
 			if (endTZ.isAfter(midnightNextTZ)) {
@@ -97,6 +96,12 @@ public class TaskInfo {
 			} else if (startTZ.isBefore(midnightBeforeTZ)) {
 				duration = Duration.between(endTZ, midnightBeforeTZ);
 				seconds = Math.abs(duration.getSeconds());
+
+				// start time is midnight day before
+				startTimeMinuteDecimal = midnightBeforeTZ.getMinute() / 60.0;
+				startTimeHourDecimal = midnightBeforeTZ.getHour() + startTimeMinuteDecimal;
+				// add a new entry that contains the start time represented in decimal
+				objectInArray.put("startx", startTimeHourDecimal);
 			} else {
 				duration = Duration.between(endTZ, startTZ);
 				seconds = Math.abs(duration.getSeconds());

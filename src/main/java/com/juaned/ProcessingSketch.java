@@ -4,13 +4,16 @@ import processing.core.PApplet;
 import processing.core.PFont;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import com.juaned.GUI.SavedTask;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ProcessingSketch extends PApplet {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	// Font
 	PFont myFont;
 	PFont boldFont;
@@ -98,11 +101,11 @@ public class ProcessingSketch extends PApplet {
 				misctotalseconds += task.getInt("seconds");
 			}
 		}
-		
+
 		// Instantiate the arrays.
 		categories = new String[anglecount];
 		angles = new float[3][anglecount]; // [seconds][degrees][value determining whether on left or right side of
-											// chart]
+		// chart]
 		startx = new float[anglecount]; // contains the degree of where a task starts.
 		// misc
 		miscangles = new int[miscanglecount];
@@ -125,13 +128,17 @@ public class ProcessingSketch extends PApplet {
 
 				angles[0][index] = task.getInt("seconds");
 				angles[1][index] = map(task.getInt("seconds"), 0, secondsinday, 0, 360);
-				startx[index] = PApplet.map(task.getFloat("startx"), (float) 0, (float) 24.0, (float) 0.0,
-						(float) 360.0) + 90; // +90 to make bottom the starting angle
+				startx[index] = PApplet.map(task.getFloat("startx"), (float) 0, (float) 24.0, (float) 0.0, (float) 360.0) + 90; // +90
+																																																												// to
+																																																												// make
+																																																												// bottom
+																																																												// the
+																																																												// starting
+																																																												// angle
 				index++;
 			} else {
 				miscangles[miscindex] = ceil(map(task.getInt("seconds"), 0, secondsinday, 0, 360));
-				startxmisc[miscindex] = map(task.getFloat("startx"), (float) 0, (float) 24.0, (float) 0.0,
-						(float) 360.0) + 90;
+				startxmisc[miscindex] = map(task.getFloat("startx"), (float) 0, (float) 24.0, (float) 0.0, (float) 360.0) + 90;
 				miscindex++;
 			}
 		}
@@ -155,7 +162,7 @@ public class ProcessingSketch extends PApplet {
 		pieTime(325); // draws the sundata
 		pieChart(300, angles, miscangles);
 	}
-	
+
 	void savePNG(String filePath) {
 		saveFrame(filePath);
 	}
@@ -258,107 +265,139 @@ public class ProcessingSketch extends PApplet {
 		int percentcol = color(255, 0, 0);
 		for (int i = 0; i < data[0].length; i++) {
 
-			// Frequent tag colors. If not a frequent tag, make it a random color.
-			if (categories[i].equals("SLEEP")) {
-
-				/* GOAL */
-				// Minimum of 6.5 hours and maximum of 8 hours of sleep.
-				float percentage = data[1][i] / (float) 360.0 * 100;
-				if (percentage >= sleepmin && percentage <= sleepmax) {
-					percentcol = completetaskcol;
-				} else {
-					percentcol = incompletetaskcol;
-				}
-
-				stroke(177, 119, 189);
-				fill(20, 15, 92);
-			} else if (categories[i].equals("EAT")) {
-				stroke(86, 158, 71);
-				percentcol = keyStrokeColor;
-				fill(97, 40, 26);
-			} else if (categories[i].equals("SPANISH") || categories[i].equals("ESPAÑOL")) {
-
-				/* GOAL */
-				// Minimum of 6.5 hours and maximum of 8 hours of sleep.
-				float percentage = data[1][i] / (float) 360.0 * 100;
-				if (percentage >= languagemin) {
-					percentcol = completetaskcol;
-				} else {
-					percentcol = incompletetaskcol;
-				}
-
-				stroke(keyStrokeColor);
-				fill(0, 115, 150);
-			} else if (categories[i].equals("GERMAN") || categories[i].equals("DEUTSCH")) {
-
-				/* GOAL */
-				// Minimum of 6.5 hours and maximum of 8 hours of sleep.
-				float percentage = data[1][i] / (float) 360.0 * 100;
-				if (percentage >= languagemin) {
-					percentcol = completetaskcol;
-				} else {
-					percentcol = incompletetaskcol;
-				}
-
-				stroke(keyStrokeColor);
-				fill(12, 148, 0);
-			} else if (categories[i].equals("GUITAR")) {
-
-				/* GOAL */
-				// Minimum of 6.5 hours and maximum of 8 hours of sleep.
-				float percentage = data[1][i] / (float) 360.0 * 100;
-				if (percentage >= languagemin) {
-					percentcol = completetaskcol;
-				} else {
-					percentcol = incompletetaskcol;
-				}
-
-				stroke(keyStrokeColor);
-				fill(219, 179, 100);
-			} else if (categories[i].equals("PYTHON")) {
-
-				/* GOAL */
-				float percentage = data[1][i] / (float) 360.0 * 100;
-				if (percentage >= 0.5) {
-					percentcol = completetaskcol;
-				} else {
-					percentcol = incompletetaskcol;
-				}
-
-				stroke(keyStrokeColor);
-				fill(237, 227, 49);
-			} else if (categories[i].equals("PHAGES")) {
-
-				/* GOAL */
-				float percentage = data[1][i] / (float) 360.0 * 100;
-				if (percentage >= 0.5) {
-					percentcol = completetaskcol;
-				} else {
-					percentcol = incompletetaskcol;
-				}
-
-				stroke(keyStrokeColor);
-				fill(150, 120, 120);
-			} else if (categories[i].equals("EXHIBITION")) {
-
-				/* GOAL */
-				// Minimum of 2 hours working on exhibition/art practice.
-				float percentage = data[1][i] / (float) 360.0 * 100;
-				if (percentage >= exhibitionmin) {
-					percentcol = completetaskcol;
-				} else {
-					percentcol = incompletetaskcol;
-				}
-
-				stroke(keyStrokeColor);
-				fill(132, 191, 209);
-			} else {
-				stroke(keyStrokeColor);
+			for (int j = 0; j < GUI.savedTasksArray.size(); j++) {
+				SavedTask savedTask = GUI.savedTasksArray.get(j);
 				int rancol = color(random(255), random(255), random(255));
-				fill(rancol);
-
-				randomcolors[i] = rancol;
+				if (categories[i].equals(savedTask.name.toUpperCase())) {
+					int r = savedTask.color.getRed();
+					int g = savedTask.color.getGreen();
+					int b = savedTask.color.getBlue();
+					rancol = color(r,g,b);
+					fill(rancol);
+					break;
+				} else {
+					stroke(keyStrokeColor);
+					fill(rancol);
+				}
 			}
+
+			// TODO:
+			// for (int j = 0; j < GUI.savedTasksArray.size(); j++) {
+			// SavedTask savedTask = GUI.savedTasksArray.get(j);
+			// if (categories[i].equals(savedTask.name)) {
+			// System.out.println(savedTask.name);
+			// } else {
+			// stroke(keyStrokeColor);
+			// int rancol = color(random(255), random(255), random(255));
+			// fill(rancol);
+			// randomcolors[i] = rancol;
+			// }
+
+			// }
+
+			// // Frequent tag colors. If not a frequent tag, make it a random color.
+			// if (categories[i].equals("SLEEP")) {
+
+			// /* GOAL */
+			// // Minimum of 6.5 hours and maximum of 8 hours of sleep.
+			// float percentage = data[1][i] / (float) 360.0 * 100;
+			// if (percentage >= sleepmin && percentage <= sleepmax) {
+			// percentcol = completetaskcol;
+			// } else {
+			// percentcol = incompletetaskcol;
+			// }
+
+			// stroke(177, 119, 189);
+			// fill(20, 15, 92);
+			// } else if (categories[i].equals("EAT")) {
+			// stroke(86, 158, 71);
+			// percentcol = keyStrokeColor;
+			// fill(97, 40, 26);
+			// } else if (categories[i].equals("SPANISH") ||
+			// categories[i].equals("ESPAÑOL")) {
+
+			// /* GOAL */
+			// // Minimum of 6.5 hours and maximum of 8 hours of sleep.
+			// float percentage = data[1][i] / (float) 360.0 * 100;
+			// if (percentage >= languagemin) {
+			// percentcol = completetaskcol;
+			// } else {
+			// percentcol = incompletetaskcol;
+			// }
+
+			// stroke(keyStrokeColor);
+			// fill(0, 115, 150);
+			// } else if (categories[i].equals("GERMAN") || categories[i].equals("DEUTSCH"))
+			// {
+
+			// /* GOAL */
+			// // Minimum of 6.5 hours and maximum of 8 hours of sleep.
+			// float percentage = data[1][i] / (float) 360.0 * 100;
+			// if (percentage >= languagemin) {
+			// percentcol = completetaskcol;
+			// } else {
+			// percentcol = incompletetaskcol;
+			// }
+
+			// stroke(keyStrokeColor);
+			// fill(12, 148, 0);
+			// } else if (categories[i].equals("GUITAR")) {
+
+			// /* GOAL */
+			// // Minimum of 6.5 hours and maximum of 8 hours of sleep.
+			// float percentage = data[1][i] / (float) 360.0 * 100;
+			// if (percentage >= languagemin) {
+			// percentcol = completetaskcol;
+			// } else {
+			// percentcol = incompletetaskcol;
+			// }
+
+			// stroke(keyStrokeColor);
+			// fill(219, 179, 100);
+			// } else if (categories[i].equals("PYTHON")) {
+
+			// /* GOAL */
+			// float percentage = data[1][i] / (float) 360.0 * 100;
+			// if (percentage >= 0.5) {
+			// percentcol = completetaskcol;
+			// } else {
+			// percentcol = incompletetaskcol;
+			// }
+
+			// stroke(keyStrokeColor);
+			// fill(237, 227, 49);
+			// } else if (categories[i].equals("PHAGES")) {
+
+			// /* GOAL */
+			// float percentage = data[1][i] / (float) 360.0 * 100;
+			// if (percentage >= 0.5) {
+			// percentcol = completetaskcol;
+			// } else {
+			// percentcol = incompletetaskcol;
+			// }
+
+			// stroke(keyStrokeColor);
+			// fill(150, 120, 120);
+			// } else if (categories[i].equals("EXHIBITION")) {
+
+			// /* GOAL */
+			// // Minimum of 2 hours working on exhibition/art practice.
+			// float percentage = data[1][i] / (float) 360.0 * 100;
+			// if (percentage >= exhibitionmin) {
+			// percentcol = completetaskcol;
+			// } else {
+			// percentcol = incompletetaskcol;
+			// }
+
+			// stroke(keyStrokeColor);
+			// fill(132, 191, 209);
+			// } else {
+			// stroke(keyStrokeColor);
+			// int rancol = color(random(255), random(255), random(255));
+			// fill(rancol);
+
+			// randomcolors[i] = rancol;
+			// }
 
 			// The drawkey boolean is to prevent repeats of keys.
 			boolean drawkey = true;
@@ -368,8 +407,8 @@ public class ProcessingSketch extends PApplet {
 
 			// Draw special category slice.
 			strokeWeight((float) 0.5);
-			arc(chartcenterX, chartcenterY, diameter, diameter, radians(startx[i]),
-					radians(startx[i]) + radians(data[1][i]), PIE);
+			arc(chartcenterX, chartcenterY, diameter, diameter, radians(startx[i]), radians(startx[i]) + radians(data[1][i]),
+					PIE);
 			// Draw the special category point.
 			float arcmidpoint = startx[i] + data[1][i] / 2;
 			float midX = chartcenterX + cos(radians(arcmidpoint)) * diameter / 2;
@@ -387,8 +426,8 @@ public class ProcessingSketch extends PApplet {
 					// Drawing the key color.
 					strokeWeight(1);
 					rectMode(CENTER);
-					rect((float) keyposXright - (float) keyrectXoffset, (float) keyposYright - (float) keyrectYoffset,
-							(float) 16, (float) 16);
+					rect((float) keyposXright - (float) keyrectXoffset, (float) keyposYright - (float) keyrectYoffset, (float) 16,
+							(float) 16);
 
 					// Draw a line.
 					stroke(175);
@@ -420,8 +459,7 @@ public class ProcessingSketch extends PApplet {
 					textSize(12);
 					float percentage = data[0][i] / (float) 86400.0 * 100;
 					String strpercent = nf(percentage, 2, 2) + "%";
-					text(strpercent, (float) (keyposXright + keypercentoffset),
-							(float) (keyposYright - 2 + keydataoffset));
+					text(strpercent, (float) (keyposXright + keypercentoffset), (float) (keyposYright - 2 + keydataoffset));
 
 					keyposYright = keyposYright + keyspacing;
 				} else {
@@ -433,8 +471,7 @@ public class ProcessingSketch extends PApplet {
 					// Draw a line.
 					stroke(175);
 					line((float) (keyposXleft + keylineXoffset), (float) (keyposYleft - keylineYoffset),
-							(float) (keyposXleft + keylineXoffset),
-							(float) (keyposYleft - keylineYoffset + keylinelength));
+							(float) (keyposXleft + keylineXoffset), (float) (keyposYleft - keylineYoffset + keylinelength));
 
 					// Drawing the key text.
 					fill(keyStrokeColor);
@@ -452,16 +489,14 @@ public class ProcessingSketch extends PApplet {
 						hours = minutes / 60;
 						minutes = minutes % 60;
 					}
-					text(hours + " hrs " + minutes + " mins ", (float) keyposXleft,
-							(float) (keyposYleft - 2 + keydataoffset));
+					text(hours + " hrs " + minutes + " mins ", (float) keyposXleft, (float) (keyposYleft - 2 + keydataoffset));
 
 					// // Draw the percentage.
 					fill(percentcol);
 					textSize(12);
 					float percentage = (float) (data[0][i] / 86400.0 * 100);
 					String strpercent = nf(percentage, 2, 2) + "%";
-					text(strpercent, (float) (keyposXleft - keypercentoffset),
-							(float) (keyposYleft - 2 + keydataoffset));
+					text(strpercent, (float) (keyposXleft - keypercentoffset), (float) (keyposYleft - 2 + keydataoffset));
 
 					keyposYleft = keyposYleft + keyspacing;
 				}
@@ -521,7 +556,8 @@ public class ProcessingSketch extends PApplet {
 		textFont(boldFont);
 
 		DateTimeFormatter date_format = DateTimeFormatter.ofPattern("EEEE - MMMM dd, yyyy");
-		text((LocalDate.parse(TaskInfo.taskDay, DateTimeFormatter.ofPattern("yyyy-MM-dd"))).format(date_format), width / 2, height - 18);
+		text((LocalDate.parse(TaskInfo.taskDay, DateTimeFormatter.ofPattern("yyyy-MM-dd"))).format(date_format), width / 2,
+				height - 18);
 	}
 
 	float[][] sortCategories(float diameter, float[][] data) {
