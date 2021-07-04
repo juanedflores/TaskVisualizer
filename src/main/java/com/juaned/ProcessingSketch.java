@@ -130,11 +130,6 @@ public class ProcessingSketch extends PApplet {
 				angles[1][index] = map(task.getInt("seconds"), 0, secondsinday, 0, 360);
 				startx[index] = PApplet.map(task.getFloat("startx"), (float) 0, (float) 24.0, (float) 0.0, (float) 360.0) + 90; // +90
 																																																												// to
-																																																												// make
-																																																												// bottom
-																																																												// the
-																																																												// starting
-																																																												// angle
 				index++;
 			} else {
 				miscangles[miscindex] = ceil(map(task.getInt("seconds"), 0, secondsinday, 0, 360));
@@ -280,124 +275,6 @@ public class ProcessingSketch extends PApplet {
 					fill(rancol);
 				}
 			}
-
-			// TODO:
-			// for (int j = 0; j < GUI.savedTasksArray.size(); j++) {
-			// SavedTask savedTask = GUI.savedTasksArray.get(j);
-			// if (categories[i].equals(savedTask.name)) {
-			// System.out.println(savedTask.name);
-			// } else {
-			// stroke(keyStrokeColor);
-			// int rancol = color(random(255), random(255), random(255));
-			// fill(rancol);
-			// randomcolors[i] = rancol;
-			// }
-
-			// }
-
-			// // Frequent tag colors. If not a frequent tag, make it a random color.
-			// if (categories[i].equals("SLEEP")) {
-
-			// /* GOAL */
-			// // Minimum of 6.5 hours and maximum of 8 hours of sleep.
-			// float percentage = data[1][i] / (float) 360.0 * 100;
-			// if (percentage >= sleepmin && percentage <= sleepmax) {
-			// percentcol = completetaskcol;
-			// } else {
-			// percentcol = incompletetaskcol;
-			// }
-
-			// stroke(177, 119, 189);
-			// fill(20, 15, 92);
-			// } else if (categories[i].equals("EAT")) {
-			// stroke(86, 158, 71);
-			// percentcol = keyStrokeColor;
-			// fill(97, 40, 26);
-			// } else if (categories[i].equals("SPANISH") ||
-			// categories[i].equals("ESPAÑOL")) {
-
-			// /* GOAL */
-			// // Minimum of 6.5 hours and maximum of 8 hours of sleep.
-			// float percentage = data[1][i] / (float) 360.0 * 100;
-			// if (percentage >= languagemin) {
-			// percentcol = completetaskcol;
-			// } else {
-			// percentcol = incompletetaskcol;
-			// }
-
-			// stroke(keyStrokeColor);
-			// fill(0, 115, 150);
-			// } else if (categories[i].equals("GERMAN") || categories[i].equals("DEUTSCH"))
-			// {
-
-			// /* GOAL */
-			// // Minimum of 6.5 hours and maximum of 8 hours of sleep.
-			// float percentage = data[1][i] / (float) 360.0 * 100;
-			// if (percentage >= languagemin) {
-			// percentcol = completetaskcol;
-			// } else {
-			// percentcol = incompletetaskcol;
-			// }
-
-			// stroke(keyStrokeColor);
-			// fill(12, 148, 0);
-			// } else if (categories[i].equals("GUITAR")) {
-
-			// /* GOAL */
-			// // Minimum of 6.5 hours and maximum of 8 hours of sleep.
-			// float percentage = data[1][i] / (float) 360.0 * 100;
-			// if (percentage >= languagemin) {
-			// percentcol = completetaskcol;
-			// } else {
-			// percentcol = incompletetaskcol;
-			// }
-
-			// stroke(keyStrokeColor);
-			// fill(219, 179, 100);
-			// } else if (categories[i].equals("PYTHON")) {
-
-			// /* GOAL */
-			// float percentage = data[1][i] / (float) 360.0 * 100;
-			// if (percentage >= 0.5) {
-			// percentcol = completetaskcol;
-			// } else {
-			// percentcol = incompletetaskcol;
-			// }
-
-			// stroke(keyStrokeColor);
-			// fill(237, 227, 49);
-			// } else if (categories[i].equals("PHAGES")) {
-
-			// /* GOAL */
-			// float percentage = data[1][i] / (float) 360.0 * 100;
-			// if (percentage >= 0.5) {
-			// percentcol = completetaskcol;
-			// } else {
-			// percentcol = incompletetaskcol;
-			// }
-
-			// stroke(keyStrokeColor);
-			// fill(150, 120, 120);
-			// } else if (categories[i].equals("EXHIBITION")) {
-
-			// /* GOAL */
-			// // Minimum of 2 hours working on exhibition/art practice.
-			// float percentage = data[1][i] / (float) 360.0 * 100;
-			// if (percentage >= exhibitionmin) {
-			// percentcol = completetaskcol;
-			// } else {
-			// percentcol = incompletetaskcol;
-			// }
-
-			// stroke(keyStrokeColor);
-			// fill(132, 191, 209);
-			// } else {
-			// stroke(keyStrokeColor);
-			// int rancol = color(random(255), random(255), random(255));
-			// fill(rancol);
-
-			// randomcolors[i] = rancol;
-			// }
 
 			// The drawkey boolean is to prevent repeats of keys.
 			boolean drawkey = true;
@@ -590,22 +467,11 @@ public class ProcessingSketch extends PApplet {
 		sortedMidY = sort(sortedMidY); // sorts from least to greatest.
 
 		// Look for the matching values to make the appropriate switch of index.
-		// NOTE: If Y values are the same, I think it could lead to a bug, but I
-		// realized that the
-		// lists are sort of sorted by going along the circumference with the value
-		// "startx", this causes
-		// the order to be from one side (right, or left) to the other side. Perhaps
-		// looking into
-		// this bug might not be necessary.
 		for (int i = 0; i < data[0].length; i++) {
 			float arcmidpoint = startx[i] + data[1][i] / 2;
 			float midY = chartcenterY + sin(radians(arcmidpoint)) * diameter / 2;
 			for (int j = 0; j < data[0].length; j++) {
 				if (midY == sortedMidY[j]) {
-					// Data[0] seconds, data[1] angles, data[2] right or left position (1 right, 0,
-					// left)
-					// categories[] contains the names, startx[] contains the starting position in
-					// circumference.
 					sortedMidY[j] = -1;
 					sorted[0][j] = data[0][i];
 					sorted[1][j] = data[1][i];

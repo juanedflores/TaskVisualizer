@@ -2,7 +2,8 @@
 The goal of this app is to visualize your daily routine and determine whether you accomplish your daily task goals.
 
 ## Installation
-This repo comes with a .jar and .app (MacOSX) for the GUI, but depends on Taskwarrior and Timewarrior to be installed as well as a hook script.
+This repo comes with a .jar and .dmg (MacOSX app) for the GUI, but depends on Taskwarrior and Timewarrior to be installed as well as a hook script.
+Visit the releases page: https://github.com/juanedflores/TaskVisualizer/releases
 
 ### Taskwarrior & Timewarrior
 Follow the installation instructions for your platform:
