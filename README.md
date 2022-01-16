@@ -1,3 +1,5 @@
+![design](./assets/taskvisualizer_icon_1024_x_1024.png)
+
 # TaskVisualizer
 The goal of this app is to visualize your daily routine and determine whether you accomplish your daily task goals.
 
