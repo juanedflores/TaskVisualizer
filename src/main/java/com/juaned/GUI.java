@@ -183,7 +183,7 @@ public class GUI extends JFrame {
             if (!taskStarted && taskID.equals("")) {
               taskName = getTaskText.toUpperCase();
               System.out.println("taskName: " + taskName);
-              String addTaskCommand = String.format("/opt/homebrew/bin/task add %s", taskName);
+              String addTaskCommand = String.format("task add %s", taskName);
               Process proc = null;
               try {
                 // add the task
@@ -198,8 +198,7 @@ public class GUI extends JFrame {
                 exception.printStackTrace();
               }
               // grab the ID of last task created
-              String getLastTaskCommand =
-                  String.format("/opt/homebrew/bin/task newest rc.verbose=nothing limit:1");
+              String getLastTaskCommand = String.format("task newest rc.verbose=nothing limit:1");
               proc = null;
               try {
                 proc = Runtime.getRuntime().exec(getLastTaskCommand);
@@ -228,7 +227,7 @@ public class GUI extends JFrame {
                 System.out.println(m.group(2));
                 taskID = m.group(2);
                 // start task
-                String startTaskCommand = String.format("/opt/homebrew/bin/task %s start", taskID);
+                String startTaskCommand = String.format("task %s start", taskID);
                 System.out.println(startTaskCommand);
                 proc = null;
                 try {
@@ -253,7 +252,7 @@ public class GUI extends JFrame {
                 finishTaskButton.setEnabled(true);
               }
             } else if (!taskStarted && startStopTaskButton.getText().equals("Resume Task")) {
-              String startTaskCommand = String.format("/usr/homebrew/bin/task %s start", taskID);
+              String startTaskCommand = String.format("task %s start", taskID);
               System.out.println(startTaskCommand);
               Process proc = null;
               try {
@@ -271,7 +270,7 @@ public class GUI extends JFrame {
               taskStarted = true;
               startStopTaskButton.setText("Pause Task");
             } else if (taskStarted && startStopTaskButton.getText().equals("Pause Task")) {
-              String stopTaskCommand = String.format("/opt/homebrew/bin/task stop %s", taskID);
+              String stopTaskCommand = String.format("task stop %s", taskID);
               Process proc = null;
               try {
                 // start the task
@@ -297,7 +296,7 @@ public class GUI extends JFrame {
           public void actionPerformed(ActionEvent e) {
             System.out.println("finishing task..");
             System.out.println("taskID: " + taskID);
-            String finishTaskCommand = String.format("/opt/homebrew/bin/task %s done", taskID);
+            String finishTaskCommand = String.format("task %s done", taskID);
             Process proc = null;
             try {
               // finish the task

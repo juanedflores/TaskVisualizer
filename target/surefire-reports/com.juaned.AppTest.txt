@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.juaned.AppTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.965 s - in com.juaned.AppTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.982 s - in com.juaned.AppTest
